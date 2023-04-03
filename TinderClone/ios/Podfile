@@ -2,6 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, min_ios_version_supported
+install! 'cocoapods', :deterministic_uuids => false
 prepare_react_native_project!
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
@@ -23,10 +24,14 @@ end
 
 target 'TinderClone' do
   config = use_native_modules!
-
+  
   # Flags change depending on the env values.
   flags = get_default_flags()
-
+  # use_frameworks! :linkage => :static
+  pod 'Firebase', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+  $RNFirebaseAsStaticFramework = true
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
@@ -58,3 +63,4 @@ target 'TinderClone' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+
