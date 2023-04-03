@@ -1,11 +1,18 @@
 import {View, Text} from 'react-native';
 import React from 'react';
+import {LogBox} from 'react-native';
+LogBox.ignoreAllLogs();
+import {NavigationContainer} from '@react-navigation/native';
+import StackNavigator from './StackNavigator';
+import {AuthProvider} from './hooks/useAuth';
 
 const App = () => {
   return (
-    <View className="flex items-center justify-center h-full bg-gray-100">
-      <Text>App</Text>
-    </View>
+    <NavigationContainer>
+      <AuthProvider>
+        <StackNavigator />
+      </AuthProvider>
+    </NavigationContainer>
   );
 };
 
