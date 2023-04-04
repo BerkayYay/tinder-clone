@@ -1,18 +1,161 @@
-import {View, Text, Button, Image} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  Button,
+  Image,
+  SafeAreaView,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import React, {useLayoutEffect, useRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import useAuth from '../hooks/useAuth';
+import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Swiper from 'react-native-deck-swiper';
+
+// create a Dummy Data for the cards which includes firstName, lastName, occupation, age, and photoURL
+const Dummy_Data = [
+  {
+    id: 1,
+    firstName: 'Elon',
+    lastName: 'Musk',
+    job: 'CEO of Tesla',
+    age: 49,
+    photoURL:
+      'https://upload.wikimedia.org/wikipedia/commons/8/85/Elon_Musk_Royal_Society_%28crop1%29.jpg',
+  },
+  {
+    id: 2,
+    firstName: 'Angelina',
+    lastName: 'Jolie',
+    job: 'Actress',
+    age: 45,
+    photoURL:
+      'https://img-s3.onedio.com/id-54a6f9125122263033f993a8/rev-0/raw/s-c10a567da9a42c4b450a351659ae37157fa18aeb.jpg',
+  },
+  {
+    id: 3,
+    firstName: 'Alexis',
+    lastName: 'Ren',
+    job: 'Model',
+    age: 26,
+    photoURL: 'https://media.1815.io/jfk/i/full/2021/10/Alexis-Ren-1.jpg',
+  },
+];
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {logout} = useAuth();
-  return (
-    <View>
-      <Text>I am the HomeScreen</Text>
-      <Button title="Go to Chat" onPress={() => navigation.navigate('Chat')} />
-      <Button title="Logout" onPress={logout} />
+  const {logout, user} = useAuth();
+  const swipeRef = useRef(null);
+
+  const renderCard = card => (
+    <View key={card.id} className="bg-white h-3/5 rounded-xl relative">
+      <Image
+        className="h-full w-full rounded-xl"
+        source={{uri: card.photoURL}}
+      />
+      <View
+        style={styles.cardShadow}
+        className="flex-row bg-white w-full h-20 justify-between items-center px-6 py-2 rounded-b-xl">
+        <View className="flex-col ">
+          <Text className="font-bold text-xl">
+            {card.firstName} {card.lastName}
+          </Text>
+          <Text>{card.job}</Text>
+        </View>
+        <Text className="font-bold text-2xl">{card.age}</Text>
+      </View>
     </View>
+  );
+
+  return (
+    <SafeAreaView className="flex-1">
+      {/* Header */}
+      <View className="flex-row justify-between items-center px-5">
+        <TouchableOpacity onPress={logout}>
+          <Image
+            className="h-10 w-10 rounded-full"
+            source={{uri: user.photoURL}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image
+            className="h-14 w-14"
+            source={require('../assets/tinderLogo.png')}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
+          <Ionicons name="chatbubbles-sharp" size={30} color="#FF5864" />
+        </TouchableOpacity>
+      </View>
+      {/* End of Header */}
+
+      {/* Cards */}
+      <View className="flex-1 -mt-6">
+        <Swiper
+          ref={swipeRef}
+          containerStyle={{backgroundColor: 'transparent'}}
+          stackSize={3}
+          cardIndex={0}
+          verticalSwipe={false}
+          animateCardOpacity
+          infinite
+          cards={Dummy_Data}
+          onSwipedLeft={() => console.log('swipe PASS')}
+          onSwipedRight={() => console.log('swiped MATCH')}
+          overlayLabels={{
+            left: {
+              title: 'NOPE',
+              style: {
+                label: {
+                  textAlign: 'center',
+                  color: 'red',
+                },
+              },
+            },
+            right: {
+              title: 'MATCH',
+              style: {
+                label: {
+                  color: '#4DED30',
+                },
+              },
+            },
+          }}
+          renderCard={renderCard}></Swiper>
+      </View>
+
+      <View className="flex flex-row justify-evenly">
+        <TouchableOpacity
+          onPress={() => swipeRef.current.swipeLeft()}
+          className="items-center justify-center rounded-full w-16 h-16 bg-red-200">
+          <Entypo name="cross" size={24} color="red" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => swipeRef.current.swipeRight()}
+          className="items-center justify-center rounded-full w-16 h-16 bg-green-200">
+          <AntDesign name="heart" size={24} color="green" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+  cardShadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+});

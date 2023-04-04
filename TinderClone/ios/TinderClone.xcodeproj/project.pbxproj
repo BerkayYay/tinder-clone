@@ -14,6 +14,9 @@
 		54BD98BF4F42502F3570CC19 /* libPods-TinderClone-TinderCloneTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26B6F079748AF456D58B1858 /* libPods-TinderClone-TinderCloneTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		F02A23B429DAF031004A3414 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F02A23B329DAF031004A3414 /* GoogleService-Info.plist */; };
+		F0CB206A29DC26EB0005F40F /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0CB206729DC26EB0005F40F /* Entypo.ttf */; };
+		F0CB206B29DC26EB0005F40F /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0CB206829DC26EB0005F40F /* Ionicons.ttf */; };
+		F0CB206C29DC26EB0005F40F /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0CB206929DC26EB0005F40F /* AntDesign.ttf */; };
 		F39145603214431E5E94F6B0 /* libPods-TinderClone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3A0798D170E7E5E6831C94 /* libPods-TinderClone.a */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +49,9 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED3A0798D170E7E5E6831C94 /* libPods-TinderClone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TinderClone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F02A23B329DAF031004A3414 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "TinderClone/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F0CB206729DC26EB0005F40F /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
+		F0CB206829DC26EB0005F40F /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ionicons.ttf; sourceTree = "<group>"; };
+		F0CB206929DC26EB0005F40F /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +94,7 @@
 		13B07FAE1A68108700A75B9A /* TinderClone */ = {
 			isa = PBXGroup;
 			children = (
+				F0CB206629DC26970005F40F /* Fonts */,
 				F02A23B329DAF031004A3414 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -149,6 +156,16 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-TinderClone-TinderCloneTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		F0CB206629DC26970005F40F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				F0CB206929DC26EB0005F40F /* AntDesign.ttf */,
+				F0CB206729DC26EB0005F40F /* Entypo.ttf */,
+				F0CB206829DC26EB0005F40F /* Ionicons.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,7 +263,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0CB206C29DC26EB0005F40F /* AntDesign.ttf in Resources */,
+				F0CB206B29DC26EB0005F40F /* Ionicons.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				F0CB206A29DC26EB0005F40F /* Entypo.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				F02A23B429DAF031004A3414 /* GoogleService-Info.plist in Resources */,
 			);
