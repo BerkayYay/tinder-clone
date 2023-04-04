@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import React, {useLayoutEffect, useRef} from 'react';
+import React, {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import useAuth from '../hooks/useAuth';
+import {db} from '../firebase';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -48,27 +49,71 @@ const Dummy_Data = [
 const HomeScreen = () => {
   const navigation = useNavigation();
   const {logout, user} = useAuth();
+  const [profiles, setProfiles] = useState([]);
   const swipeRef = useRef(null);
 
-  const renderCard = card => (
-    <View key={card.id} className="bg-white h-3/5 rounded-xl relative">
-      <Image
-        className="h-full w-full rounded-xl"
-        source={{uri: card.photoURL}}
-      />
-      <View
-        style={styles.cardShadow}
-        className="flex-row bg-white w-full h-20 justify-between items-center px-6 py-2 rounded-b-xl">
-        <View className="flex-col ">
-          <Text className="font-bold text-xl">
-            {card.firstName} {card.lastName}
-          </Text>
-          <Text>{card.job}</Text>
-        </View>
-        <Text className="font-bold text-2xl">{card.age}</Text>
-      </View>
-    </View>
-  );
+  useLayoutEffect(() => {
+    db.collection('users')
+      .doc(user.uid)
+      .get()
+      .then(doc => {
+        if (!doc.exists) {
+          navigation.navigate('Modal');
+        }
+      });
+  }, []);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      db.collection('users').onSnapshot(snapshot => {
+        setProfiles(
+          snapshot.docs
+            .filter(doc => doc.id !== user.uid)
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            })),
+        );
+      });
+    };
+    fetchProfiles();
+  }, []);
+
+  const renderCard = card => {
+    return (
+      <>
+        {card ? (
+          <View key={card.id} className="bg-white h-3/5 rounded-xl relative">
+            <Image
+              className="h-full w-full rounded-xl"
+              source={{uri: card.photoURL}}
+            />
+            <View
+              style={styles.cardShadow}
+              className="flex-row bg-white w-full h-20 justify-between items-center px-6 py-2 rounded-b-xl">
+              <View className="flex-col ">
+                <Text className="font-bold text-xl">{card.displayName}</Text>
+                <Text>{card.job}</Text>
+              </View>
+              <Text className="font-bold text-2xl">{card.age}</Text>
+            </View>
+          </View>
+        ) : (
+          <View
+            className="relative bg-white h-3/4 rounded-xl justify-center items-center"
+            style={styles.cardShadow}>
+            <Text className="font-bold pb-5">No more profiles</Text>
+            <Image
+              className="h-20 w-20"
+              height={100}
+              width={100}
+              source={{uri: 'https://links.papareact.com/6gb'}}
+            />
+          </View>
+        )}
+      </>
+    );
+  };
 
   return (
     <SafeAreaView className="flex-1">
@@ -80,7 +125,8 @@ const HomeScreen = () => {
             source={{uri: user.photoURL}}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Modal')}>
           <Image
             className="h-14 w-14"
             source={require('../assets/tinderLogo.png')}
@@ -102,8 +148,7 @@ const HomeScreen = () => {
           cardIndex={0}
           verticalSwipe={false}
           animateCardOpacity
-          infinite
-          cards={Dummy_Data}
+          cards={profiles}
           onSwipedLeft={() => console.log('swipe PASS')}
           onSwipedRight={() => console.log('swiped MATCH')}
           overlayLabels={{
