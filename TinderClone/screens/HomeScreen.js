@@ -11,40 +11,12 @@ import React, {useState, useRef, useEffect, useLayoutEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import useAuth from '../hooks/useAuth';
 import {db} from '../firebase';
+import fs from '@react-native-firebase/firestore';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Swiper from 'react-native-deck-swiper';
-
-// create a Dummy Data for the cards which includes firstName, lastName, occupation, age, and photoURL
-const Dummy_Data = [
-  {
-    id: 1,
-    firstName: 'Elon',
-    lastName: 'Musk',
-    job: 'CEO of Tesla',
-    age: 49,
-    photoURL:
-      'https://upload.wikimedia.org/wikipedia/commons/8/85/Elon_Musk_Royal_Society_%28crop1%29.jpg',
-  },
-  {
-    id: 2,
-    firstName: 'Angelina',
-    lastName: 'Jolie',
-    job: 'Actress',
-    age: 45,
-    photoURL:
-      'https://img-s3.onedio.com/id-54a6f9125122263033f993a8/rev-0/raw/s-c10a567da9a42c4b450a351659ae37157fa18aeb.jpg',
-  },
-  {
-    id: 3,
-    firstName: 'Alexis',
-    lastName: 'Ren',
-    job: 'Model',
-    age: 26,
-    photoURL: 'https://media.1815.io/jfk/i/full/2021/10/Alexis-Ren-1.jpg',
-  },
-];
+import generateId from '../lib/generateId';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -64,20 +36,121 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
+    let unsub;
     const fetchProfiles = async () => {
-      db.collection('users').onSnapshot(snapshot => {
-        setProfiles(
-          snapshot.docs
-            .filter(doc => doc.id !== user.uid)
-            .map(doc => ({
-              id: doc.id,
-              ...doc.data(),
-            })),
-        );
-      });
+      const passes = [];
+      const swipes = [];
+      await db
+        .collection('users')
+        .doc(user.uid)
+        .collection('passes')
+        .get()
+        .then(snapshot => {
+          snapshot.docs.map(doc => {
+            passes.push(doc.id);
+          });
+        });
+
+      await db
+        .collection('users')
+        .doc(user.uid)
+        .collection('swipes')
+        .get()
+        .then(snapshot => {
+          snapshot.docs.map(doc => {
+            swipes.push(doc.id);
+          });
+        });
+
+      const passedUserIds = passes.length > 0 ? passes : ['test'];
+      const swipedUserIds = swipes.length > 0 ? swipes : ['test'];
+
+      db.collection('users')
+        .where('id', 'not-in', [...passedUserIds, ...swipedUserIds])
+        .onSnapshot(snapshot => {
+          setProfiles(
+            snapshot.docs
+              .filter(doc => doc.id !== user.uid)
+              .map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+              })),
+          );
+        });
     };
     fetchProfiles();
-  }, []);
+  }, [db]);
+
+  const swipeLeft = async cardIndex => {
+    if (!profiles[cardIndex]) return;
+
+    const userSwiped = profiles[cardIndex];
+    console.log(`You swiped pass on ${userSwiped.displayName}`);
+    db.collection('users')
+      .doc(user.uid)
+      .collection('passes')
+      .doc(userSwiped.id)
+      .set(userSwiped);
+  };
+
+  const swipeRight = async cardIndex => {
+    if (!profiles[cardIndex]) return;
+
+    const userSwiped = profiles[cardIndex];
+    const loggedInUser = (
+      await db.collection('users').doc(user.uid).get()
+    ).data();
+
+    // Check if the user swiped right on the other user
+    db.collection('users')
+      .doc(userSwiped.id)
+      .collection('swipes')
+      .doc(user.uid)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          // user has matched with you before you matched with them
+          console.log('Matched with ' + userSwiped.displayName);
+          db.collection('users')
+            .doc(user.uid)
+            .collection('swipes')
+            .doc(userSwiped.id)
+            .set(userSwiped);
+
+          // create a match
+          db.collection('matches')
+            .doc(generateId(user.uid, userSwiped.id))
+            .set({
+              users: {
+                [user.uid]: loggedInUser,
+                [userSwiped.id]: userSwiped,
+              },
+              usersMatched: [user.uid, userSwiped.id],
+              timestamp: fs.FieldValue.serverTimestamp(),
+            });
+
+          // navigate to the match screen
+          navigation.navigate('Match', {
+            loggedInUser,
+            userSwiped,
+          });
+        } else {
+          // user has not matched with you before you matched with them
+          console.log('You swiped right on ' + userSwiped.displayName);
+          db.collection('users')
+            .doc(user.uid)
+            .collection('swipes')
+            .doc(userSwiped.id)
+            .set(userSwiped);
+        }
+      });
+
+    db.collection('users')
+      .doc(user.uid)
+      .collection('swipes')
+      .doc(userSwiped.id)
+      .set(userSwiped);
+  };
 
   const renderCard = card => {
     return (
@@ -149,8 +222,12 @@ const HomeScreen = () => {
           verticalSwipe={false}
           animateCardOpacity
           cards={profiles}
-          onSwipedLeft={() => console.log('swipe PASS')}
-          onSwipedRight={() => console.log('swiped MATCH')}
+          onSwipedLeft={cardIndex => {
+            swipeLeft(cardIndex);
+          }}
+          onSwipedRight={cardIndex => {
+            swipeRight(cardIndex);
+          }}
           overlayLabels={{
             left: {
               title: 'NOPE',
@@ -170,7 +247,8 @@ const HomeScreen = () => {
               },
             },
           }}
-          renderCard={renderCard}></Swiper>
+          renderCard={renderCard}
+        />
       </View>
 
       <View className="flex flex-row justify-evenly">
