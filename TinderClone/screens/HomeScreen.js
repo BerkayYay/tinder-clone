@@ -110,7 +110,7 @@ const HomeScreen = () => {
       .then(doc => {
         if (doc.exists) {
           // user has matched with you before you matched with them
-          console.log('Matched with ' + userSwiped.displayName);
+
           db.collection('users')
             .doc(user.uid)
             .collection('swipes')
@@ -136,7 +136,7 @@ const HomeScreen = () => {
           });
         } else {
           // user has not matched with you before you matched with them
-          console.log('You swiped right on ' + userSwiped.displayName);
+
           db.collection('users')
             .doc(user.uid)
             .collection('swipes')
