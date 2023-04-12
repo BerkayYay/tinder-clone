@@ -7,14 +7,13 @@ import {getFirestore} from '@react-native-firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBVxrS-aLglBAgcON4YsxbGFP_iFcEFmDc',
-  authDomain: 'tinder-clone-d965a.firebaseapp.com',
-  projectId: 'tinder-clone-d965a',
-  storageBucket: 'tinder-clone-d965a.appspot.com',
-  messagingSenderId: '293747589265',
-  appId: '1:293747589265:web:020a3dfd8c9db110937f30',
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: '',
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
