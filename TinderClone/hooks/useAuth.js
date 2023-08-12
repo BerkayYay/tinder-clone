@@ -14,13 +14,13 @@ const AuthContext = createContext({});
 
 GoogleSignin.configure({
   androidClientId:
-    '293747589265-o90fm5qtsbi8vru3pvtrd9018hoovabs.apps.googleusercontent.com',
+    '',
   iosClientId:
-    '293747589265-ues1inhompd3alf66j117t92ksmq7k81.apps.googleusercontent.com',
+    '',
   scope: ['profile', 'email'],
   permissions: ['public_profile', 'email', 'gender', 'location'],
   webClientId:
-    '293747589265-o90fm5qtsbi8vru3pvtrd9018hoovabs.apps.googleusercontent.com',
+    '',
 });
 
 export const AuthProvider = ({children}) => {
